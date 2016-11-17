@@ -9,13 +9,17 @@ const issue9Path = path.join(__dirname, 'files', 'issue-9.yaml');
 describe('Js-YAML provider for Linter', () => {
   const lint = require('../lib/linter-js-yaml.js').provideLinter().lint;
 
-  beforeEach(() =>
+  beforeEach(() => {
+    waitsForPromise(() =>
+      atom.packages.activatePackage('language-yaml')
+    );
+
     waitsForPromise(() =>
       atom.packages.activatePackage('linter-js-yaml').then(() =>
         atom.config.set('linter-js-yaml.customTags', ['!yaml', '!include'])
       )
-    )
-  );
+    );
+  });
 
   it('finds something wrong with bad.yaml', () =>
     waitsForPromise(() =>
