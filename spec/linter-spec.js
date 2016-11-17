@@ -2,6 +2,7 @@
 
 import * as path from 'path';
 
+const travisYml = path.join(__dirname, '.travis.yml');
 const badPath = path.join(__dirname, 'files', 'bad.yaml');
 const issue2Path = path.join(__dirname, 'files', 'issue-2.yaml');
 const issue9Path = path.join(__dirname, 'files', 'issue-9.yaml');
@@ -11,13 +12,20 @@ describe('Js-YAML provider for Linter', () => {
 
   beforeEach(() => {
     waitsForPromise(() =>
-      atom.packages.activatePackage('language-yaml')
+      atom.packages.activatePackage('language-yaml').then(() =>
+        console.log('language activated'))
     );
 
     waitsForPromise(() =>
-      atom.packages.activatePackage('linter-js-yaml').then(() =>
-        atom.config.set('linter-js-yaml.customTags', ['!yaml', '!include'])
-      )
+      atom.workspace.open(travisYml).then(() =>
+        console.log('file opened'))
+    );
+
+    waitsForPromise(() =>
+      atom.packages.activatePackage('linter-js-yaml').then(() => {
+        console.log('linter-js-yaml activated');
+        atom.config.set('linter-js-yaml.customTags', ['!yaml', '!include']);
+      })
     );
   });
 
