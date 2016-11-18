@@ -11,22 +11,19 @@ describe('Js-YAML provider for Linter', () => {
   const lint = require('../lib/linter-js-yaml.js').provideLinter().lint;
 
   beforeEach(() => {
-    waitsForPromise(() =>
-      atom.packages.activatePackage('language-yaml').then(() =>
-        console.log('language activated'))
-    );
+    const activationPromise = atom.packages.activatePackage('linter-js-yaml').then(() => {
+      console.log('linter-js-yaml activated');
+      atom.config.set('linter-js-yaml.customTags', ['!yaml', '!include']);
+    });
 
     waitsForPromise(() =>
-      atom.workspace.open(travisYml).then(() =>
-        console.log('file opened'))
-    );
+      atom.packages.activatePackage('language-yaml'));
 
     waitsForPromise(() =>
-      atom.packages.activatePackage('linter-js-yaml').then(() => {
-        console.log('linter-js-yaml activated');
-        atom.config.set('linter-js-yaml.customTags', ['!yaml', '!include']);
-      })
-    );
+      atom.workspace.open(travisYml));
+
+    atom.packages.triggerDeferredActivationHooks();
+    waitsForPromise(() => activationPromise);
   });
 
   it('finds something wrong with bad.yaml', () =>
